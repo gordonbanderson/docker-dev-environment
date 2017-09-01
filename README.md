@@ -85,3 +85,21 @@ dockerdevenvironment_database_1             docker-entrypoint.sh postgres    Up 
 dockerdevenvironment_redis_1                docker-entrypoint.sh redis ...   Up      0.0.0.0:32768->6379/tcp
 ```
 
+Look at the "state" column. If any of them are not "Up" that's probably where you want to start. You can check the log for the container process using:
+
+```
+docker-compose logs api-app --follow
+```
+
+If all hope is lost, just try rebuilding the containers:
+
+```
+# Stop and delete containers
+docker-compose down
+
+# Rebuild images:
+docker-compose build
+
+# Restart containers (daemonised):
+docker-compose up -d
+```
