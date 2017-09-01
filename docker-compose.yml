@@ -1,0 +1,60 @@
+version: '2'
+services:
+
+  # API #
+  ## Application ##
+  api-app:
+    build:
+      context: ./
+      dockerfile: ./api.app.dockerfile
+    working_dir: /var/www
+    volumes:
+      # Assumes "api" project is 1 level up
+      - ./../api/:/var/www
+    environment:
+      - "DB_PASSWORD=secret"
+      - "DB_PORT=3306"
+      - "DB_HOST=database"
+  ## Nginx ##
+  api-nginx:
+    build:
+      context: ./
+      dockerfile: ./api.nginx.dockerfile
+    working_dir: /var/www
+    volumes_from:
+      - app
+    ports:
+      - 8080:80
+  ## Backing services ##
+  api-redis:
+    image: (tba)
+  api-database:
+    image:
+
+  # Consumer web #
+  ## Application ##
+  consumer-web-app:
+    build:
+      context: ./
+      dockerfile: ./app.dockerfile
+    working_dir: /var/www
+    volumes:
+      # Assumes "consumer-web" project is 1 level up
+      - ./../consumer-web/:/var/www
+    environment:
+      - "DB_PASSWORD=secret"
+      - "DB_PORT=3306"
+      - "DB_HOST=database"
+  ## Nginx ##
+  consumer-web-nginx:
+    build:
+      context: ./
+      dockerfile: ./web.dockerfile
+    working_dir: /var/www
+    volumes_from:
+      - app
+    ports:
+      - 8080:80
+
+volumes:
+  dbdata:
