@@ -52,8 +52,16 @@ docker-compose exec api-app php artisan cache:clear
 
 ### ...tail the logs? ###
 
+For the API:
+
 ```
 docker-compose exec api-app tail -f storage/logs/laravel.log
+```
+
+... and the website:
+
+```
+docker-compose exec consumer-web-app tail -f storage/logs/laravel.log
 ```
 
 ## Help! Something broke ##
