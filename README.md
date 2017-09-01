@@ -31,7 +31,7 @@ You should now have an API server running on [http://localhost:8888](http://loca
 ### ...run migrations? ###
 
 ```
-docker-compose exec app php artisan migrate
+docker-compose exec api-app php artisan migrate --force
 ```
 
 ### ...connect to the database? ###
@@ -47,7 +47,13 @@ psql -U postgres -h localhost -p 54321
 The Redis container is shared between API and website, so you only need to do it once for both:
 
 ```
-docker-compose exec app php artisan cache:clear
+docker-compose exec api-app php artisan cache:clear
+```
+
+### ...tail the logs? ###
+
+```
+docker-compose exec api-app tail -f storage/logs/laravel.log
 ```
 
 ## Help! Something broke ##

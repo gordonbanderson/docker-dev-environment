@@ -14,7 +14,7 @@ services:
     env_file:
       - ./api/api.env
   ## Nginx ##
-  api-nginx:
+  api:
     build:
       context: ./api/
       dockerfile: nginx.dockerfile
@@ -37,7 +37,7 @@ services:
     env_file:
       - ./consumer-web/consumer-web.env
   ## Nginx ##
-  consumer-web-nginx:
+  consumer-web:
     build:
       context: ./consumer-web/
       dockerfile: nginx.dockerfile
@@ -54,8 +54,8 @@ services:
       - "6379"
   database:
     build:
-      context: ./
-      dockerfile: ./database.dockerfile
+      context: ./database/
+      dockerfile: database.dockerfile
     ports:
       - '54321:5432'
 
