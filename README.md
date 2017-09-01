@@ -52,9 +52,13 @@ docker-compose exec app php artisan cache:clear
 
 ## Help! Something broke ##
 
+You can check that all the processes are running as expected using the following command:
+
 ```
 docker-compose ps
 ```
+
+You should see a list of the containers:
 
 ```
                   Name                                 Command               State               Ports
@@ -66,3 +70,4 @@ dockerdevenvironment_consumer-web-nginx_1   nginx -g daemon off;             Up 
 dockerdevenvironment_database_1             docker-entrypoint.sh postgres    Up      0.0.0.0:54321->5432/tcp
 dockerdevenvironment_redis_1                docker-entrypoint.sh redis ...   Up      0.0.0.0:32768->6379/tcp
 ```
+

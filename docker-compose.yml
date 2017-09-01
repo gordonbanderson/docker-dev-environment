@@ -5,21 +5,19 @@ services:
   ## Application ##
   api-app:
     build:
-      context: ./
-      dockerfile: ./api.app.dockerfile
+      context: ./api/
+      dockerfile: app.dockerfile
     working_dir: /var/www
     volumes:
       # Assumes "api" project is 1 level up
       - ./../api/:/var/www
-    environment:
-      - "DB_PASSWORD=secret"
-      - "DB_PORT=3306"
-      - "DB_HOST=database"
+    env_file:
+      - ./api/api.env
   ## Nginx ##
   api-nginx:
     build:
-      context: ./
-      dockerfile: ./api.nginx.dockerfile
+      context: ./api/
+      dockerfile: nginx.dockerfile
     working_dir: /var/www
     volumes_from:
       - api-app
@@ -30,19 +28,19 @@ services:
   ## Application ##
   consumer-web-app:
     build:
-      context: ./
-      dockerfile: ./consumer-web.app.dockerfile
+      context: ./consumer-web/
+      dockerfile: app.dockerfile
     working_dir: /var/www
     volumes:
       # Assumes "consumer-web" project is 1 level up
       - ./../consumer-web/:/var/www
-    environment:
-      - "DB_PASSWORD=secret"
+    env_file:
+      - ./consumer-web/consumer-web.env
   ## Nginx ##
   consumer-web-nginx:
     build:
-      context: ./
-      dockerfile: ./consumer-web.nginx.dockerfile
+      context: ./consumer-web/
+      dockerfile: nginx.dockerfile
     working_dir: /var/www
     volumes_from:
       - consumer-web-app

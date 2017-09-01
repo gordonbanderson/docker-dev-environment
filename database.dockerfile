@@ -4,5 +4,4 @@ RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt xenial-pgdg main" >
     && apt-get update -y \
     && apt-get install -y postgresql-9.6-postgis-2.3
 
-ONBUILD RUN createdb -U postgres gis \
-    && psql -U postgres -c "CREATE EXTENSION postgis; CREATE EXTENSION postgis_topology;" gis
+ADD init-db.sh /docker-entrypoint-initdb.d/init-db.sh
