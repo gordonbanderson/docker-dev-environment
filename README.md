@@ -101,7 +101,7 @@ Look at the "state" column. If any of them are not "Up" that's probably where yo
 docker-compose logs api-app --follow
 ```
 
-If all hope is lost, you can rebuilding the containers:
+If all hope is lost, you can rebuild the containers:
 
 ```
 # Stop and delete containers
