@@ -17,7 +17,7 @@ That is, your folder structure should be as such:
   |- docker-dev-environment
 ```
 
-Make sure your two codebases are prep'ed and ready to run (do any `composer install`ing or `.env` setup), then go ahead and bring up Docker:
+You'll need to prepare both codebases by running `composer install` in each folder. After this, you can go ahead and bring up the Docker containers:
 
 ```
 cd docker-dev-environment
@@ -27,6 +27,10 @@ docker-compose up -d
 You should now have an API server running on [http://localhost:8888](http://localhost:8888) and a consumer web server running on [http://localhost:8889](http://localhost:8889).
 
 ## How do I... ##
+
+### ...make code changes? ###
+
+The scripts will add mount points on the containers that link directly back to the host file system. You can edit the files in the `../consumer-web` and `../api` folders and they will be instantly reflected inside the Docker containers.
 
 ### ...run migrations? ###
 
@@ -64,6 +68,12 @@ docker-compose exec api-app tail -f storage/logs/laravel.log
 docker-compose exec consumer-web-app tail -f storage/logs/laravel.log
 ```
 
+### ...run the tests? ###
+
+@TODO
+
+There's currently no easy way to do this apart from manually bootstrapping and running phpunit via `docker-compose exec...`.
+
 ## Help! Something broke ##
 
 You can check that all the processes are running as expected using the following command:
@@ -91,7 +101,7 @@ Look at the "state" column. If any of them are not "Up" that's probably where yo
 docker-compose logs api-app --follow
 ```
 
-If all hope is lost, just try rebuilding the containers:
+If all hope is lost, you can rebuilding the containers:
 
 ```
 # Stop and delete containers
@@ -103,3 +113,7 @@ docker-compose build
 # Restart containers (daemonised):
 docker-compose up -d
 ```
+
+## Contributing ##
+
+See the list of open issues [here](https://github.com/foodkit/docker-dev-environment/issues).
