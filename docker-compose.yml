@@ -13,6 +13,9 @@ services:
       - ./../api/:/var/www
     env_file:
       - ./api/api.env
+    links:
+      - database
+      - redis
   ## Nginx ##
   api:
     build:
@@ -36,6 +39,8 @@ services:
       - ./../consumer-web/:/var/www
     env_file:
       - ./consumer-web/consumer-web.env
+    links:
+      - redis
   ## Nginx ##
   consumer-web:
     build:
