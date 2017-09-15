@@ -1,0 +1,13 @@
+
+#Docker dev environment aliases
+# Get a bash shell on a docker terminal
+dt() {
+    docker exec -ti $1 /bin/bash
+}
+
+dpsql() {
+    psql -U postgres -h foodkit.db -p 54321
+}
+
+
+

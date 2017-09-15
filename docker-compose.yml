@@ -4,6 +4,10 @@ services:
   # API #
   ## Application ##
   api-app:
+    container_name: foodkit.api
+    environment:
+      - APT_MIRROR="${APT_MIRROR}"
+
     build:
       context: ./api/
       dockerfile: app.dockerfile
@@ -16,8 +20,12 @@ services:
     links:
       - database
       - redis
+      - beanstalk
+
   ## Nginx ##
   api:
+    container_name: foodkit.api.nginx
+
     build:
       context: ./api/
       dockerfile: nginx.dockerfile
@@ -30,6 +38,8 @@ services:
   # Consumer web #
   ## Application ##
   consumer-web-app:
+    container_name: foodkit.cw
+
     build:
       context: ./consumer-web/
       dockerfile: app.dockerfile
@@ -41,8 +51,11 @@ services:
       - ./consumer-web/consumer-web.env
     links:
       - redis
+
   ## Nginx ##
   consumer-web:
+    container_name: foodkit.cw.nginx
+
     build:
       context: ./consumer-web/
       dockerfile: nginx.dockerfile
@@ -50,17 +63,32 @@ services:
     volumes_from:
       - consumer-web-app
     ports:
-      - 8889:80
+      - '8889:80'
 
   ## Backing services ##
   redis:
+    container_name: foodkit.redis
     image: redis
     ports:
       - "6379"
+
+  ## Postgresql
   database:
+    container_name: foodkit.db
     build:
       context: ./database/
       dockerfile: database.dockerfile
     ports:
       - '54321:5432'
 
+  redis:
+    container_name: foodkit.redis
+    image: redis
+    ports:
+      - "6379"
+
+  beanstalk:
+    container_name: foodkit.beanstalk
+    image: schickling/beanstalkd
+    ports:
+      - "11300"

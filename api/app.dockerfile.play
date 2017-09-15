@@ -1,0 +1,22 @@
+FROM php:7.0.4-fpm
+
+ARG APT_MIRROR
+
+RUN apt-get update
+
+# Install PHP libs and other dev tools
+RUN apt-get install -y libpq-dev jq git build-essential libxml2 libxml2-dev curl git \
+    && docker-php-ext-configure pgsql do pdo_pgsql mbstring zip soap -with-pgsql=/usr/local/pgsql
+
+#Node
+RUN curl -sL https://deb.nodesource.com/setup_7.x | bash
+RUN apt-get install -y nodejs && cd /var/www/ && npm install
+RUN cd /var/www && npm install && npm install gulp -g # << npm install does not appear to work
+
+# Install composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+#Change terminal prompt
+RUN echo 'PS1="\[$(tput setaf 2)$(tput bold)[\]foodkit.api@\\h$:\\w]#\[$(tput sgr0) \]"' >> /root/.bashrc
+
+ADD api.env /var/www/.env
