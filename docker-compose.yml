@@ -3,8 +3,11 @@ services:
 
   # API #
   ## Application ##
+
+  # @todo Need to increase memory limit for unit testing
   api-app:
     container_name: foodkit.api
+    mem_limit: 1g
     environment:
       - APT_MIRROR="${APT_MIRROR}"
 
@@ -25,6 +28,7 @@ services:
   ## Nginx ##
   api:
     container_name: foodkit.api.nginx
+    #? mem_limit: 20m
 
     build:
       context: ./api/
@@ -39,6 +43,8 @@ services:
   ## Application ##
   consumer-web-app:
     container_name: foodkit.cw
+    mem_limit: 500m
+
 
     build:
       context: ./consumer-web/
