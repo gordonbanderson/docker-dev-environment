@@ -20,7 +20,24 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 #Run composer, install libs - this does not work
 #RUN composer install
 
+RUN apt-get install -y vim
+
 #Change terminal prompt
 RUN echo 'PS1="\[$(tput setaf 2)$(tput bold)[\]foodkit.api@\\h$:\\w]#\[$(tput sgr0) \]"' >> /root/.bashrc
+RUN echo 'source /root/.bash_aliases' >> /root/.bashrc
 
-ADD api.env /var/www/.env
+#This does not work, probably due to it being a mounted folder
+#ADD api.env /var/www/.env
+
+ADD api.bash_aliases /root/.bash_aliases
+
+#TODO add these above later
+RUN apt-get install -y htop strace traceroute multitail
+
+
+#Enable php-fm error logging /usr/local/etc/php-fpm.conf - logs should appear in /usr/local/var/log/
+
+RUN sed -i '/^;catch_workers_output/ccatch_workers_output = yes' "/usr/local/etc/php-fpm.d/www.conf" \
+    && sed -i '/^;php_flag\[display_errors\]/cphp_flag[display_errors] = off' "/usr/local/etc/php-fpm.d/www.conf" \
+    && sed -i '/^;php_admin_value\[error_log\]/cphp_admin_value[error_log] = /var/log/php/fpm-error.log' "/usr/local/etc/php-fpm.d/www.conf" \
+    && sed -i '/^;php_admin_flag\[log_errors\]/cphp_admin_flag[log_errors] = on' "/usr/local/etc/php-fpm.d/www.conf"
