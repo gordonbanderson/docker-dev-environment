@@ -6,7 +6,15 @@ dt() {
 }
 
 dpsql() {
-    psql -U postgres -h foodkit.db -p 54321
+    psql -U postgres -h localhost -p 54321 -v PROMPT1='%[%033[1m%]%M %n@%/%R%[%033[0m%]%# '
+}
+
+fksql() {
+    psql -U postgres -h localhost -p 54321 foodkitapi
+}
+
+dl() {
+    docker logs -f $1
 }
 
 
