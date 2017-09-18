@@ -15,6 +15,8 @@ RUN sed -i '/^;catch_workers_output/ccatch_workers_output = yes' "/usr/local/etc
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
+RUN echo 'source /root/.bash_aliases' >> /root/.bashrc
+
 #Run composer, install libs - this does not work
 #RUN composer install
 
