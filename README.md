@@ -2,8 +2,9 @@
 
 Contains the development environment required to build, run and develop the Foodkit API and consumer website.
 
-## Getting started ##
+## Getting started - Installation and Helpers ##
 
+### Install Docker ###
 Install Docker. You can get it for [Windows](https://docs.docker.com/docker-for-windows/install/),
  [Mac OSX](https://docs.docker.com/docker-for-mac/install/), [Ubuntu](https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/) 
  and a range of other \*nix distributions.
@@ -20,6 +21,62 @@ That is, your folder structure should be as such:
   |- docker-dev-environment
 ```
 
+###Install Bash Alias and Function Helpers
+Execute the following comand to add new aliases to your ~/.bashrc file.  This *only needs done once*, as subsequently 
+every time a terminal is opened ~/.bashrc will be executed.  This will import the docker dev envrionment helper functions
+ also.  Run this from `/path/to/docker-dev-envrionment` - do not forget to use `>>` instead
+of `>` or you will overwrite as opposed to append.
+
+```bash
+echo "source '${PWD}/helpers/bash-help'" >> ~/.bashrc
+```
+
+###Build Containers###
+Execute the following command to either build or rebuild the containers.  The first time this is executed it may take
+several minutes as docker images need to be downloaded, but for subsequent rebuilds they are cached.
+```bash
+./rebuildFoodkitContainers
+```
+
+This creates the following containers:
+* foodkit.api.nginx - this is the webserver for the API and port forwards to localhost:8888
+* foodkit.api - contains the foodkit app served by php-fpm.  Artisan tasks can be run here.
+* foodkit.cw.nginx - this is the webserver for the consumer web and port forwards to localhost:8889
+* foodkit.cw - this is the consumer web app
+* foodkit.redis - redis server, for caching and sessions
+* foodkit.beanstalk - beanstalkd server for queue mangagement
+
+You can see if these are running by executing `sudo docker-compose ps`
+
+###Get a Terminal for a Container
+To get a terminal on any of the above, execute `dt <image_name>`.  For example
+
+```
+ginja@acer574:~/tools/foodkit/dockerdevtest/docker-dev-environment$ dt foodkit.api
+[foodkit.api@1b45d06ee05e$:/var/www]#
+```
+
+Note that terminal prompts have the container name, except currently for redis and beanstalk.  In practice only
+`foodkit.api` and `foodkit.cw` are useful, except when debugging installation issues.
+
+###Get Service Logs for a Container
+The alias `dl` allows one to get logs for a container service.  The alias acts like `tail -f` in a standard UNIX environment.
+Note however that the logs are not persisted.
+
+```
+ginja@acer574:~/tools/foodkit/dockerdevtest/docker-dev-environment$ dl foodkit.api.nginx
+172.18.0.1 - - [18/Sep/2017:04:28:15 +0000] "GET /admin/login HTTP/1.1" 200 5370 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Safari/537.36" "-"
+172.18.0.1 - - [18/Sep/2017:04:28:15 +0000] "GET /build/js/vendors-4a6792287a.js HTTP/1.1" 304 0 "http://localhost:8888/admin/login" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Safari/537.36" "-"
+172.18.0.1 - - [18/Sep/2017:04:28:15 +0000] "GET /build/js/admin-ce735c5b90.js HTTP/1.1" 304 0 "http://localhost:8888/admin/login" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Safari/537.36" "-"
+172.18.0.1 - - [18/Sep/2017:04:28:15 +0000] "GET /build/css/app-9f3d550412.css HTTP/1.1" 304 0 "http://localhost:8888/admin/login" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Safari/537.36" "-"
+172.18.0.1 - - [18/Sep/2017:04:28:17 +0000] "GET /fonts/patternfly//OpenSans-Regular-webfont.woff2 HTTP/1.1" 304 0 "http://localhost:8888/build/css/app-9f3d550412.css" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Safari/537.36" "-"
+172.18.0.1 - - [18/Sep/2017:04:28:17 +0000] "GET /fonts/patternfly//OpenSans-Semibold-webfont.woff2 HTTP/1.1" 304 0 "http://localhost:8888/build/css/app-9f3d550412.css" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Safari/537.36" "-"
+```
+
+
+
+
+GBA: I think this needs done inside the containers
 You'll need to prepare both codebases by running `composer install` in each folder. After this, you can go ahead and 
 bring up the Docker containers:
 
@@ -31,14 +88,9 @@ cd docker-dev-environment
 You should now have an API server running on [http://localhost:8888](http://localhost:8888) and a consumer web server
 running on [http://localhost:8889](http://localhost:8889).
 
-##Bash Alias and Function Helpers
-In order to avoid typing in long commands execute the following to add new aliases to your ~/.bashrc file.  This only
-needs done once.
 
-```
-less helpers/bash-help > ~/.bashrc
 
-```
+
 
 ## Find the Faster Mirrors
 On a Debian based machine, or from a container find the fastest mirror using this
