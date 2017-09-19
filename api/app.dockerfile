@@ -5,7 +5,7 @@ RUN cat /etc/apt/sources.list
 RUN apt-get update
 
 # Install PostGRES PDO
-RUN apt-get install -y libpq-dev jq git build-essential libxml2 libxml2-dev curl \
+RUN apt-get install -y libpq-dev jq git build-essential libxml2 libxml2-dev curl supervisor \
     && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
     && docker-php-ext-install pdo pdo_pgsql pgsql mbstring zip soap
 
@@ -41,3 +41,5 @@ RUN sed -i '/^;catch_workers_output/ccatch_workers_output = yes' "/usr/local/etc
     && sed -i '/^;php_flag\[display_errors\]/cphp_flag[display_errors] = off' "/usr/local/etc/php-fpm.d/www.conf" \
     && sed -i '/^;php_admin_value\[error_log\]/cphp_admin_value[error_log] = /var/log/php/fpm-error.log' "/usr/local/etc/php-fpm.d/www.conf" \
     && sed -i '/^;php_admin_flag\[log_errors\]/cphp_admin_flag[log_errors] = on' "/usr/local/etc/php-fpm.d/www.conf"
+
+COPY laravel-worker.conf /etc/supervisor/conf.d/laravel-worker.conf
