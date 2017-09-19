@@ -23,7 +23,7 @@ services:
     links:
       - database
       - redis
-      - beanstalk
+      - beanstalkd
 
   ## Nginx ##
   api:
@@ -93,8 +93,8 @@ services:
     ports:
       - "6379"
 
-  beanstalk:
-    container_name: foodkit.beanstalk
+  beanstalkd:
+    container_name: foodkit.beanstalkd
     image: schickling/beanstalkd
     ports:
       - "11300"
