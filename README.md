@@ -91,7 +91,7 @@ ginja@acer574:~/tools/foodkit/dockerdevtest/docker-dev-environment$ dl foodkit.a
 Alias has been added to allow easy access to the foodkit API database in your container:
 
 ```bash
-> fksql
+> fsql
 psql (9.5.8, server 9.6.5)
 WARNING: psql major version 9.5, server major version 9.6.
          Some psql features might not work.
@@ -107,7 +107,7 @@ You will need a copy of the live foodkit database in order to do this.
 
 The build scripts currently wipe away the copy of the database when rebuilding the postgresql, restore as follows.
 ```
-fksql < /path/to/foodkit_dump.sql
+fsql < /path/to/foodkit_dump.sql
 ```
 
 ###Run Composer Install Inside the Containers

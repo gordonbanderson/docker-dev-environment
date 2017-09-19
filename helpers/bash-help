@@ -9,7 +9,7 @@ dpsql() {
     psql -U postgres -h localhost -p 54321 -v PROMPT1='%[%033[1m%]%M %n@%/%R%[%033[0m%]%# '
 }
 
-fksql() {
+fsql() {
     psql -U postgres -h localhost -p 54321 foodkitapi
 }
 
