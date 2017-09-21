@@ -86,6 +86,9 @@ services:
       dockerfile: database.dockerfile
     ports:
       - '54321:5432'
+    #Need to 777 dbdata
+    volumes:
+      - ../dbdata:/var/lib/postgresql/data
 
   redis:
     container_name: foodkit.redis
@@ -98,3 +101,5 @@ services:
     image: schickling/beanstalkd
     ports:
       - "11300"
+
+
