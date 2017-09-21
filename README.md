@@ -73,6 +73,8 @@ ginja@acer574:~/tools/foodkit/dockerdevtest/docker-dev-environment$ dt foodkit.a
 Note that terminal prompts have the container name, except currently for redis and beanstalk.  In practice only
 `foodkit.api` and `foodkit.cw` are useful, except when debugging installation issues.
 
+You can tail the laravel logs from these containers using the normal `tail -f` command.
+
 ###Get Service Logs for a Container
 The alias `dl` allows one to get logs for a container service.  The alias acts like `tail -f` in a standard UNIX environment.
 Note however that the logs are not persisted or stored on the containers, but are piped to stdout and stderr.
