@@ -43,3 +43,4 @@ RUN sed -i '/^;catch_workers_output/ccatch_workers_output = yes' "/usr/local/etc
     && sed -i '/^;php_admin_flag\[log_errors\]/cphp_admin_flag[log_errors] = on' "/usr/local/etc/php-fpm.d/www.conf"
 
 COPY laravel-worker.conf /etc/supervisor/conf.d/laravel-worker.conf
+RUN update-rc.d supervisor defaults
