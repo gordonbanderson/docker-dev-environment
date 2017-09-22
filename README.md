@@ -21,6 +21,21 @@ That is, your folder structure should be as such:
   |- docker-dev-environment
 ```
 
+For database persistence, create a file at the same level as `api` and `consumer-web` called dbdata.
+```
+mkdir dbdata
+sudo chmod 777 dbdata
+```
+
+Folder structure is now this
+```
+/parent-folder
+  |- api
+  |- consumer-web
+  |- docker-dev-environment
+  |- dbdata
+```
+
 ###Install Bash Alias and Function Helpers
 Execute the following comand to add new aliases to your ~/.bashrc file.  This *only needs done once*, as subsequently 
 every time a terminal is opened ~/.bashrc will be executed.  This will import the docker dev envrionment helper functions
@@ -31,7 +46,7 @@ of `>` or you will overwrite as opposed to append.
 echo "source '${PWD}/helpers/bash-help'" >> ~/.bashrc
 ```
 
-###Build Foodkit Containers###
+###Build Foodkit Containers
 Execute the following command to either build or rebuild the containers.  The first time this is executed it may take
 several minutes as docker images need to be downloaded, but for subsequent rebuilds they are cached.
 ```bash
@@ -45,7 +60,9 @@ This creates the following containers:
 * foodkit.cw - this is the consumer web app
 * foodkit.redis - redis server, for caching and sessions
 * foodkit.beanstalk - beanstalkd server for queue mangagement
-* foodkit.db - postgresql server and database @todo Change data to be persisted?
+* foodkit.db - postgresql server
+
+Note that the postgresql database is persisted outside of the foodkit.db and will survive a rebuild.
 
 ###Starting Foodkit Containers
 ```
@@ -66,7 +83,7 @@ You can see if these have stopped running by executing `sudo docker-compose ps`
 To get a terminal on any of the above, execute `dt <image_name>`.  For example
 
 ```
-ginja@acer574:~/tools/foodkit/dockerdevtest/docker-dev-environment$ dt foodkit.api
+HOSTNAME:~/tools/foodkit/dockerdevtest/docker-dev-environment$ dt foodkit.api
 [foodkit.api@1b45d06ee05e$:/var/www]#
 ```
 
@@ -80,7 +97,7 @@ The alias `dl` allows one to get logs for a container service.  The alias acts l
 Note however that the logs are not persisted or stored on the containers, but are piped to stdout and stderr.
 
 ```
-ginja@acer574:~/tools/foodkit/dockerdevtest/docker-dev-environment$ dl foodkit.api.nginx
+HOSTNAME:~/tools/foodkit/dockerdevtest/docker-dev-environment$ dl foodkit.api.nginx
 172.18.0.1 - - [18/Sep/2017:04:28:15 +0000] "GET /admin/login HTTP/1.1" 200 5370 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Safari/537.36" "-"
 172.18.0.1 - - [18/Sep/2017:04:28:15 +0000] "GET /build/js/vendors-4a6792287a.js HTTP/1.1" 304 0 "http://localhost:8888/admin/login" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Safari/537.36" "-"
 172.18.0.1 - - [18/Sep/2017:04:28:15 +0000] "GET /build/js/admin-ce735c5b90.js HTTP/1.1" 304 0 "http://localhost:8888/admin/login" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Safari/537.36" "-"
@@ -89,7 +106,7 @@ ginja@acer574:~/tools/foodkit/dockerdevtest/docker-dev-environment$ dl foodkit.a
 172.18.0.1 - - [18/Sep/2017:04:28:17 +0000] "GET /fonts/patternfly//OpenSans-Semibold-webfont.woff2 HTTP/1.1" 304 0 "http://localhost:8888/build/css/app-9f3d550412.css" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.79 Safari/537.36" "-"
 ```
 
-###Access the Foodkit API Database From the Command Line###
+###Access the Foodkit API Database From the Command Line
 Alias has been added to allow easy access to the foodkit API database in your container:
 
 ```bash
@@ -104,10 +121,8 @@ foodkitapi=#
 
 ## Getting started - Priming ##
 
-###Restore Copy of Live Database###
+###Restore Copy of Live Database
 You will need a copy of the live foodkit database in order to do this.  
-
-The build scripts currently wipe away the copy of the database when rebuilding the postgresql, restore as follows.
 ```
 fsql < /path/to/foodkit_dump.sql
 ```
@@ -117,7 +132,7 @@ fsql < /path/to/foodkit_dump.sql
 Execute `composer install` and then `artisan migrate` inside the foodkit.api container
 
 ```
-ginja@acer574:~/tools/foodkit/dockerdevtest/docker-dev-environment$ dt foodkit.api
+HOSTNAME:~/tools/foodkit/dockerdevtest/docker-dev-environment$ dt foodkit.api
 [foodkit.api@5c941aa9fc1f$:/var/www]# composer install
 Do not run Composer as root/super user! See https://getcomposer.org/root for details
 Loading composer repositories with package information
@@ -140,7 +155,7 @@ Migrated: 2017_08_25_073616_add_accounting_fields_to_vendors
 ####Consumer Web
 Run `composer install` inside the foodkit.cw container
 
-```angularjs
+```
 > dt foodkit.cw
 [foodkit.cw@1e6d5f9f789f$:/var/www]# composer install
 Do not run Composer as root/super user! See https://getcomposer.org/root for details
@@ -153,7 +168,6 @@ Generating optimized autoload files
 Generating optimized class loader
 The compiled services file has been removed.
 > bash contrib/setup.sh
-
 ```
 
 
@@ -174,7 +188,8 @@ files in the `../consumer-web` and `../api` folders and they will be instantly r
 ### ...run migrations? ###
 
 ```
-docker-compose exec api-app php artisan migrate --force
+dt foodkit.api
+artisan migrate --force
 ```
 
 ### ...connect to the database? ###
@@ -185,18 +200,15 @@ The Docker configuration will port-forward PostGRES to 54321 on your local machi
 psql -U postgres -h localhost -p 54321
 ```
 
-GBA: notes
-```angular2html
-createdb -U postgres -h localhost -p 54321 foodkitapi
-dpsql foodkitapi
-```
+Alternatively use the bash alias `fsql`
 
 ### ...clear the cache? ###
 
 The Redis container is shared between API and website, so you only need to do it once for both:
 
 ```
-docker-compose exec api-app php artisan cache:clear
+dt foodkit.api
+artisan cache:clear
 ```
 
 ### ...tail the logs? ###
@@ -204,13 +216,15 @@ docker-compose exec api-app php artisan cache:clear
 For the API:
 
 ```
-docker-compose exec api-app tail -f storage/logs/laravel.log
+dt foodkit.api
+tail -f storage/logs/laravel-YYYY-MM-DD.log
 ```
 
 ... and the website:
 
 ```
-docker-compose exec consumer-web-app tail -f storage/logs/laravel.log
+dt foodkit.cw
+tail -f storage/logs/laravel-YYYY-MM-DD.log
 ```
 
 ### ...run the tests? ###
@@ -219,10 +233,6 @@ docker-compose exec consumer-web-app tail -f storage/logs/laravel.log
 
 There's currently no easy way to do this apart from manually bootstrapping and running phpunit via `docker-compose exec...`.
 
-### ... get a shell? ###
-```
-docker exec -ti foodkit.api /bin/bash
-```
 
 ## Help! Something broke ##
 
@@ -249,40 +259,9 @@ foodkit.redis       docker-entrypoint.sh redis ...   Up      0.0.0.0:32771->6379
 Look at the "state" column. If any of them are not "Up" that's probably where you want to start. You can check the log
 for the container process using:
 
-```
-docker-compose logs api-app --follow
-```
-
-If all hope is lost, you can rebuild the containers:
-
-```
-# Stop and delete containers
-docker-compose down
-
-# Rebuild images:
-docker-compose build
-
-# Restart containers (daemonised):
-docker-compose up -d
-```
-
 ## Contributing ##
 
 See the list of open issues [here](https://github.com/foodkit/docker-dev-environment/issues).
 
-
-#TOFIX
-
-[foodkit.api@69badc343178$:/var/www]# history
-    1  psql -U postgres -h foodkit.db -p 5432
-    2  apt-get install postgresql-client
-    3  psql -U postgres -h foodkit.db -p 5432
-    4  history
-
-port forwarding not working
-
-In container
-
-psql -U postgres -h foodkit.db -p 5432 foodkitapi
 
 
